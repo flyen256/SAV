@@ -1,3 +1,0 @@
-E:/Projects/C/ScreenAudioVisualizer/build/CMakeFiles/SAV.dir
-E:/Projects/C/ScreenAudioVisualizer/build/CMakeFiles/ALL_BUILD.dir
-E:/Projects/C/ScreenAudioVisualizer/build/CMakeFiles/ZERO_CHECK.dir
