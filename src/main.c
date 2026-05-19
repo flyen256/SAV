@@ -443,8 +443,8 @@ void create_default_cfg_file() {
   fprintf(file, "bar_gap=0\n");
   fprintf(file, "bar_size=1\n");
   fprintf(file, "window_height=300\n");
-  fprintf(file, "volume_multiplier=1.0\n");
-  fprintf(file, "bass_boost_multiplier=4.0\n");
+  fprintf(file, "volume_multiplier=0.25\n");
+  fprintf(file, "bass_boost_multiplier=3.0\n");
   fclose(file);
 }
 
@@ -509,6 +509,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
       smoothed_frequencies[i] =
           smoothed_frequencies[i] * 0.80f + amplitude * 0.20f;
+    }
+
+    for (int i = 0; i < visual_bars; i++) {
+      float raw_amplitude = complex_abs(fft_output[i]);
+      float amplitude = log10f(1.0f + raw_amplitude * 15.0f);
+      smoothed_frequencies[i] = smoothed_frequencies[i] * 0.82f +
+                                amplitude * 0.01f * bass_boost_multiplier;
     }
 
     if (!is_click_through_enabled) {
