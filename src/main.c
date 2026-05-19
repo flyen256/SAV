@@ -624,7 +624,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     ClearBackground(BLANK);
 
     for (int i = 0; i < visual_bars; i++) {
-      int bar_height = (int)(smoothed_frequencies[i] * window_height * 0.25f);
+      int bar_height =
+          (int)(smoothed_frequencies[i] * window_height * volume_multiplier);
       if (bar_height > window_height)
         bar_height = window_height;
 
