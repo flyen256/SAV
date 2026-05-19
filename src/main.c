@@ -133,6 +133,28 @@ float read_config_float(const char *key) {
       return (float)val;
     }
   }
+  return -1.0f;
+}
+
+bool read_config_color(const char *key, Color *color) {
+  char *string_value = read_config_value(key);
+  if (string_value != NULL) {
+    int r = 0;
+    int g = 0;
+    int b = 0;
+    int a = 255;
+
+    int parsed = sscanf(string_value, "%d,%d,%d,%d", &r, &g, &b, &a);
+
+    if (parsed >= 3) {
+      color->r = (unsigned char)r;
+      color->g = (unsigned char)g;
+      color->b = (unsigned char)b;
+      color->a = (unsigned char)a;
+      return true;
+    }
+  }
+  return false;
 }
 
 int get_visual_bars() {
@@ -198,6 +220,20 @@ float get_volume_multiplier() {
   if (volume_multiplier >= 0)
     value = volume_multiplier;
   return value;
+}
+
+Color get_top_color() {
+  Color color = RED;
+  color.a = 255;
+  read_config_color("top_color", &color);
+  return color;
+}
+
+Color get_bottom_color() {
+  Color color = RED;
+  color.a = 255;
+  read_config_color("bottom_color", &color);
+  return color;
 }
 
 void config_window() {
@@ -443,9 +479,25 @@ void create_default_cfg_file() {
   fprintf(file, "bar_gap=0\n");
   fprintf(file, "bar_size=1\n");
   fprintf(file, "window_height=300\n");
-  fprintf(file, "volume_multiplier=0.25\n");
+  fprintf(file, "volume_multiplier=0.35\n");
   fprintf(file, "bass_boost_multiplier=3.0\n");
+  fprintf(file, "top_color=173,106,255,255\n");
+  fprintf(file, "bottom_color=255,255,255,255\n");
   fclose(file);
+}
+
+Color SAVColorLerp(Color c1, Color c2, float t) {
+  if (t < 0.0f)
+    t = 0.0f;
+  if (t > 1.0f)
+    t = 1.0f;
+
+  Color result;
+  result.r = (unsigned char)(c1.r + (c2.r - c1.r) * t);
+  result.g = (unsigned char)(c1.g + (c2.g - c1.g) * t);
+  result.b = (unsigned char)(c1.b + (c2.b - c1.b) * t);
+  result.a = (unsigned char)(c1.a + (c2.a - c1.a) * t);
+  return result;
 }
 
 Vector2 drag_offset = {0};
@@ -475,6 +527,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
   float volume_multiplier = get_volume_multiplier();
   float bass_boost_multiplier = get_bass_boost_multiplier();
+
+  Color top_color = get_top_color();
+  Color bottom_color = get_bottom_color();
 
   DEVMODE dm;
   dm.dmSize = sizeof(dm);
@@ -551,16 +606,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     ClearBackground(BLANK);
 
     for (int i = 0; i < visual_bars; i++) {
-      int bar_height =
-          (int)(smoothed_frequencies[i] * window_height * volume_multiplier);
-
+      int bar_height = (int)(smoothed_frequencies[i] * window_height * 0.25f);
       if (bar_height > window_height)
         bar_height = window_height;
 
       int x_pos = i * (bar_size + bar_gap);
       int y_pos = window_height - bar_height;
 
-      DrawRectangle(x_pos, y_pos, bar_size, bar_height, RED);
+      float t = (float)bar_height / (float)window_height;
+      Color dynamic_top_color = SAVColorLerp(bottom_color, top_color, t);
+
+      DrawRectangleGradientV(x_pos, y_pos, bar_size, bar_height,
+                             dynamic_top_color, bottom_color);
     }
     EndDrawing();
   }
