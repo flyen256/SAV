@@ -2,6 +2,9 @@
 
 SAV - ScreenAudioVisualizer is open-source customizable device audio visualizer build with C, raylib, tray and miniaudio.
 
+# Preview
+![preview](https://github.com/user-attachments/assets/d5d54eda-6040-4a6c-91a5-1c1290ba38ca)
+
 # Configuration
 
 ```cfg
