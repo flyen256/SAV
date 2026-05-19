@@ -476,7 +476,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
   float volume_multiplier = get_volume_multiplier();
   float bass_boost_multiplier = get_bass_boost_multiplier();
 
-  SetTargetFPS(60);
+  DEVMODE dm;
+  dm.dmSize = sizeof(dm);
+
+  if (EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &dm))
+    SetTargetFPS(dm.dmDisplayFrequency);
+  else
+    SetTargetFPS(60);
 
   while (tray_loop(0) == 0) {
     if (WindowShouldClose())
