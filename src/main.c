@@ -59,36 +59,44 @@ FILE *cfg_file;
 bool window_opened = false;
 ma_device device;
 
-void trim(char *str) {
+void trim(char *str)
+{
   int l = strlen(str);
-  while (l > 0 && isspace((unsigned char)str[l - 1])) {
+  while (l > 0 && isspace((unsigned char)str[l - 1]))
+  {
     str[--l] = '\0';
   }
   int start = 0;
-  while (str[start] && isspace((unsigned char)str[start])) {
+  while (str[start] && isspace((unsigned char)str[start]))
+  {
     start++;
   }
-  if (start > 0) {
+  if (start > 0)
+  {
     memmove(str, str + start, l - start + 1);
   }
 }
 
-char *read_config_value(const char *key) {
+char *read_config_value(const char *key)
+{
   if (cfg_file == NULL)
     return NULL;
   rewind(cfg_file);
 
   char line[MAX_LINE_LENGTH];
 
-  while (fgets(line, sizeof(line), cfg_file) != NULL) {
+  while (fgets(line, sizeof(line), cfg_file) != NULL)
+  {
     trim(line);
 
-    if (line[0] == '\0' || line[0] == '#' || line[0] == ';') {
+    if (line[0] == '\0' || line[0] == '#' || line[0] == ';')
+    {
       continue;
     }
 
     char *delimiter = strchr(line, '=');
-    if (delimiter != NULL) {
+    if (delimiter != NULL)
+    {
       *delimiter = '\0';
 
       char *found_key = line;
@@ -97,7 +105,8 @@ char *read_config_value(const char *key) {
       trim(found_key);
       trim(value);
 
-      if (strcmp(found_key, key) == 0) {
+      if (strcmp(found_key, key) == 0)
+      {
         return strdup(value);
       }
     }
@@ -105,40 +114,52 @@ char *read_config_value(const char *key) {
   return NULL;
 }
 
-int read_config_int(const char *key) {
+int read_config_int(const char *key)
+{
   char *string_value = read_config_value(key);
-  if (string_value != NULL) {
+  if (string_value != NULL)
+  {
     char *endptr;
     long val = strtol(string_value, &endptr, 10);
 
-    if (string_value == endptr) {
+    if (string_value == endptr)
+    {
       return -1;
-    } else {
+    }
+    else
+    {
       return (int)val;
     }
   }
   return -1;
 }
 
-float read_config_float(const char *key) {
+float read_config_float(const char *key)
+{
   char *string_value = read_config_value(key);
-  if (string_value != NULL) {
+  if (string_value != NULL)
+  {
     char *endptr;
 
     double val = strtod(string_value, &endptr);
 
-    if (string_value == endptr) {
+    if (string_value == endptr)
+    {
       return -1.0f;
-    } else {
+    }
+    else
+    {
       return (float)val;
     }
   }
   return -1.0f;
 }
 
-bool read_config_color(const char *key, Color *color) {
+bool read_config_color(const char *key, Color *color)
+{
   char *string_value = read_config_value(key);
-  if (string_value != NULL) {
+  if (string_value != NULL)
+  {
     int r = 0;
     int g = 0;
     int b = 0;
@@ -146,7 +167,8 @@ bool read_config_color(const char *key, Color *color) {
 
     int parsed = sscanf(string_value, "%d,%d,%d,%d", &r, &g, &b, &a);
 
-    if (parsed >= 3) {
+    if (parsed >= 3)
+    {
       color->r = (unsigned char)r;
       color->g = (unsigned char)g;
       color->b = (unsigned char)b;
@@ -157,7 +179,8 @@ bool read_config_color(const char *key, Color *color) {
   return false;
 }
 
-int get_visual_bars() {
+int get_visual_bars()
+{
   int value = VISUAL_BARS;
   int fft_size = read_config_int("fft_size");
   if (fft_size > 0)
@@ -165,7 +188,8 @@ int get_visual_bars() {
   return value;
 }
 
-int get_fft_size() {
+int get_fft_size()
+{
   int value = FFT_SIZE;
   int fft_size = read_config_int("fft_size");
   if (fft_size > 0)
@@ -173,7 +197,8 @@ int get_fft_size() {
   return value;
 }
 
-int get_bar_size() {
+int get_bar_size()
+{
   int value = BAR_SIZE;
   int bar_size = read_config_int("bar_size");
   if (bar_size > 0)
@@ -181,7 +206,8 @@ int get_bar_size() {
   return value;
 }
 
-int get_bar_gap() {
+int get_bar_gap()
+{
   int value = BAR_GAP;
   int bar_gap = read_config_int("bar_gap");
   if (bar_gap > 0)
@@ -189,7 +215,8 @@ int get_bar_gap() {
   return value;
 }
 
-int get_window_width() {
+int get_window_width()
+{
   int visual_bars = get_visual_bars();
   int bar_size = get_bar_size();
   int bar_gap = get_bar_gap();
@@ -198,7 +225,8 @@ int get_window_width() {
   return visual_bars * (bar_size + bar_gap);
 }
 
-int get_window_height() {
+int get_window_height()
+{
   int value = WINDOW_HEIGHT;
   int window_height = read_config_int("window_height");
   if (window_height > 0)
@@ -206,7 +234,8 @@ int get_window_height() {
   return value;
 }
 
-float get_bass_boost_multiplier() {
+float get_bass_boost_multiplier()
+{
   float value = 4.0f;
   float bass_boost_multiplier = read_config_float("bass_boost_multiplier");
   if (bass_boost_multiplier >= 0)
@@ -214,7 +243,8 @@ float get_bass_boost_multiplier() {
   return value;
 }
 
-float get_volume_multiplier() {
+float get_volume_multiplier()
+{
   float value = 1.0f;
   float volume_multiplier = read_config_float("volume_multiplier");
   if (volume_multiplier >= 0)
@@ -222,38 +252,44 @@ float get_volume_multiplier() {
   return value;
 }
 
-Color get_top_color() {
+Color get_top_color()
+{
   Color color = RED;
   color.a = 255;
   read_config_color("top_color", &color);
   return color;
 }
 
-Color get_bottom_color() {
+Color get_bottom_color()
+{
   Color color = RED;
   color.a = 255;
   read_config_color("bottom_color", &color);
   return color;
 }
 
-void config_window() {
+void config_window()
+{
   SetConfigFlags(FLAG_WINDOW_TRANSPARENT | FLAG_WINDOW_UNDECORATED);
 }
 
-void open_window(int width, int height) {
+void open_window(int width, int height)
+{
   if (window_opened)
     return;
   InitWindow(width, height, "Visualizer");
   window_opened = true;
 }
-void close_window() {
+void close_window()
+{
   if (!window_opened)
     return;
   CloseWindow();
   window_opened = false;
 }
 
-void tray_close(struct tray_menu *menu) {
+void tray_close(struct tray_menu *menu)
+{
   tray_exit();
   close_window();
   ma_device_uninit(&device);
@@ -263,24 +299,29 @@ void tray_close(struct tray_menu *menu) {
 
 bool is_click_through_enabled = false;
 
-void set_click_through(bool enable) {
+void set_click_through(bool enable)
+{
   HWND hwnd = (HWND)GetWindowHandle();
 
   LONG_PTR style = GetWindowLongPtr(hwnd, GWL_EXSTYLE);
 
-  if (enable) {
+  if (enable)
+  {
     SetWindowLongPtr(hwnd, GWL_EXSTYLE,
                      style | WS_EX_TRANSPARENT | WS_EX_LAYERED);
 
     SetMouseCursor(MOUSE_CURSOR_DEFAULT);
-  } else {
+  }
+  else
+  {
     SetWindowLongPtr(hwnd, GWL_EXSTYLE, style & ~WS_EX_TRANSPARENT);
   }
 }
 
 extern struct tray tray;
 
-void tray_open_window(struct tray_menu *menu) {
+void tray_open_window(struct tray_menu *menu)
+{
   if (!window_opened)
     open_window(get_window_width(), get_window_height());
   else
@@ -289,7 +330,8 @@ void tray_open_window(struct tray_menu *menu) {
   tray_update(&tray);
 }
 
-void tray_toggle_click_through(struct tray_menu *menu) {
+void tray_toggle_click_through(struct tray_menu *menu)
+{
   is_click_through_enabled = !is_click_through_enabled;
 
   menu->checked = is_click_through_enabled;
@@ -298,7 +340,8 @@ void tray_toggle_click_through(struct tray_menu *menu) {
   set_click_through(is_click_through_enabled);
 }
 
-void set_always_on_top(bool enable) {
+void set_always_on_top(bool enable)
+{
   HWND hwnd = (HWND)GetWindowHandle();
 
   if (enable)
@@ -311,7 +354,8 @@ bool is_always_on_top_enabled = false;
 
 void tray_toggle_always_on_top(struct tray_menu *menu);
 
-void tray_toggle_always_on_top(struct tray_menu *menu) {
+void tray_toggle_always_on_top(struct tray_menu *menu)
+{
   is_always_on_top_enabled = !is_always_on_top_enabled;
   menu->checked = is_always_on_top_enabled;
 
@@ -320,6 +364,7 @@ void tray_toggle_always_on_top(struct tray_menu *menu) {
 }
 
 struct tray tray = {
+    .icon = "assets/icon.ico",
     .menu = (struct tray_menu[]){
         {"Open", 0, 1, tray_open_window, NULL},
         {"Always on Top", 0, 0, tray_toggle_always_on_top, NULL},
@@ -333,35 +378,42 @@ _Fcomplex fft_input[MAX_FFT_SIZE];
 _Fcomplex fft_output[MAX_FFT_SIZE];
 float frequencies[MAX_FFT_SIZE];
 
-unsigned int bit_reverse(unsigned int x, int bits) {
+unsigned int bit_reverse(unsigned int x, int bits)
+{
   unsigned int y = 0;
-  for (int i = 0; i < bits; i++) {
+  for (int i = 0; i < bits; i++)
+  {
     y = (y << 1) | (x & 1);
     x >>= 1;
   }
   return y;
 }
 
-void fft(_Fcomplex *in, _Fcomplex *out, int n) {
+void fft(_Fcomplex *in, _Fcomplex *out, int n)
+{
   int bits = (int)log2f((float)n);
 
-  for (int i = 0; i < n; i++) {
+  for (int i = 0; i < n; i++)
+  {
     unsigned int rev_idx = bit_reverse(i, bits);
     out[rev_idx] = in[i];
   }
 
-  for (int len = 2; len <= n; len <<= 1) {
+  for (int len = 2; len <= n; len <<= 1)
+  {
     float angle = -2.0f * M_PI / len;
     _Fcomplex wlen;
     wlen._Val[0] = cosf(angle);
     wlen._Val[1] = sinf(angle);
 
-    for (int i = 0; i < n; i += len) {
+    for (int i = 0; i < n; i += len)
+    {
       _Fcomplex w;
       w._Val[0] = 1.0f;
       w._Val[1] = 0.0f;
 
-      for (int j = 0; j < len / 2; j++) {
+      for (int j = 0; j < len / 2; j++)
+      {
         _Fcomplex u = out[i + j];
         _Fcomplex v = out[i + j + len / 2];
 
@@ -389,7 +441,8 @@ ma_device_config device_config;
 int fft_sample_count = 0;
 
 void data_callback(ma_device *pDevice, void *pOutput, const void *pInput,
-                   ma_uint32 frameCount) {
+                   ma_uint32 frameCount)
+{
   if (pInput == NULL || frameCount == 0)
     return;
 
@@ -397,7 +450,8 @@ void data_callback(ma_device *pDevice, void *pOutput, const void *pInput,
   ma_uint32 channels = pDevice->capture.channels;
   int fft_size = current_fft_size;
 
-  for (ma_uint32 i = 0; i < frameCount; i++) {
+  for (ma_uint32 i = 0; i < frameCount; i++)
+  {
     float raw_sample = pInputFloat[i * channels];
 
     float window =
@@ -408,7 +462,8 @@ void data_callback(ma_device *pDevice, void *pOutput, const void *pInput,
 
     fft_sample_count++;
 
-    if (fft_sample_count >= fft_size) {
+    if (fft_sample_count >= fft_size)
+    {
       fft_sample_count = 0;
     }
   }
@@ -416,7 +471,8 @@ void data_callback(ma_device *pDevice, void *pOutput, const void *pInput,
   (void)pOutput;
 }
 
-int init_audio() {
+int init_audio()
+{
   ma_result result;
   device_config = ma_device_config_init(ma_device_type_loopback);
   device_config.capture.format = ma_format_f32;
@@ -430,16 +486,19 @@ int init_audio() {
   return 0;
 }
 
-float complex_abs(_Fcomplex c) {
+float complex_abs(_Fcomplex c)
+{
   return sqrtf(c._Val[0] * c._Val[0] + c._Val[1] * c._Val[1]);
 }
 
 float smoothed_frequencies[MAX_FFT_SIZE] = {0};
 
-void open_cfg_file() {
+void open_cfg_file()
+{
   char exePath[MAX_PATH];
 
-  if (GetModuleFileNameA(NULL, exePath, MAX_PATH) == 0) {
+  if (GetModuleFileNameA(NULL, exePath, MAX_PATH) == 0)
+  {
     perror("Could not found path to executable");
     return;
   }
@@ -453,12 +512,14 @@ void open_cfg_file() {
   cfg_file = fopen(exePath, "r");
 }
 
-void create_default_cfg_file() {
+void create_default_cfg_file()
+{
   if (cfg_file != NULL)
     return;
   char exePath[MAX_PATH];
 
-  if (GetModuleFileNameA(NULL, exePath, MAX_PATH) == 0) {
+  if (GetModuleFileNameA(NULL, exePath, MAX_PATH) == 0)
+  {
     perror("Could not found path to executable");
     return;
   }
@@ -486,7 +547,8 @@ void create_default_cfg_file() {
   fclose(file);
 }
 
-Color SAVColorLerp(Color c1, Color c2, float t) {
+Color SAVColorLerp(Color c1, Color c2, float t)
+{
   if (t < 0.0f)
     t = 0.0f;
   if (t > 1.0f)
@@ -504,7 +566,8 @@ Vector2 drag_offset = {0};
 bool is_dragging = false;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
-                   LPSTR lpCmdLine, int nCmdShow) {
+                   LPSTR lpCmdLine, int nCmdShow)
+{
   CoInitialize(NULL);
 
   open_cfg_file();
@@ -539,13 +602,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
   else
     SetTargetFPS(60);
 
-  while (tray_loop(0) == 0) {
+  while (tray_loop(0) == 0)
+  {
     if (WindowShouldClose())
       close_window();
 
     fft(fft_input, fft_output, fft_size);
 
-    for (int i = 0; i < visual_bars; i++) {
+    for (int i = 0; i < visual_bars; i++)
+    {
       float t = (float)i / (float)visual_bars;
 
       float max_fft_index = (float)(fft_size / 2 - 1);
@@ -572,23 +637,30 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
           smoothed_frequencies[i] * 0.80f + amplitude * 0.20f;
     }
 
-    for (int i = 0; i < visual_bars; i++) {
+    for (int i = 0; i < visual_bars; i++)
+    {
       float raw_amplitude = complex_abs(fft_output[i]);
       float amplitude = log10f(1.0f + raw_amplitude * 15.0f);
       smoothed_frequencies[i] = smoothed_frequencies[i] * 0.82f +
                                 amplitude * 0.01f * bass_boost_multiplier;
     }
 
-    if (!is_click_through_enabled) {
-      if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+    if (!is_click_through_enabled)
+    {
+      if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+      {
         drag_offset = GetMousePosition();
         is_dragging = true;
       }
 
-      if (is_dragging) {
-        if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
+      if (is_dragging)
+      {
+        if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT))
+        {
           is_dragging = false;
-        } else {
+        }
+        else
+        {
           Vector2 window_pos = GetWindowPosition();
           Vector2 current_mouse = GetMousePosition();
 
@@ -605,7 +677,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     BeginDrawing();
     ClearBackground(BLANK);
 
-    for (int i = 0; i < visual_bars; i++) {
+    for (int i = 0; i < visual_bars; i++)
+    {
       int bar_height = (int)(smoothed_frequencies[i] * window_height * 0.25f);
       if (bar_height > window_height)
         bar_height = window_height;
