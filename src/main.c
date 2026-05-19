@@ -236,6 +236,14 @@ Color get_bottom_color() {
   return color;
 }
 
+float get_bass_expansion() {
+  float value = 11.0f;
+  float bass_expansion = read_config_float("bass_expansion");
+  if (bass_expansion >= 0)
+    value = bass_expansion;
+  return value;
+}
+
 void config_window() {
   SetConfigFlags(FLAG_WINDOW_TRANSPARENT | FLAG_WINDOW_UNDECORATED);
 }
@@ -481,9 +489,10 @@ void create_default_cfg_file() {
   fprintf(file, "bar_size=1\n");
   fprintf(file, "window_height=300\n");
   fprintf(file, "volume_multiplier=0.35\n");
-  fprintf(file, "bass_boost_multiplier=3.0\n");
+  fprintf(file, "bass_boost_multiplier=1.0\n");
   fprintf(file, "top_color=173,106,255,255\n");
   fprintf(file, "bottom_color=255,255,255,255\n");
+  fprintf(file, "bass_expansion=7.5\n");
   fclose(file);
 }
 
@@ -528,6 +537,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
   float volume_multiplier = get_volume_multiplier();
   float bass_boost_multiplier = get_bass_boost_multiplier();
+  float bass_expansion = get_bass_expansion();
+
+  float max_log_multiplier = powf(2.0f, bass_expansion) - 1.0f;
 
   Color top_color = get_top_color();
   Color bottom_color = get_bottom_color();
@@ -550,8 +562,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
       float t = (float)i / (float)visual_bars;
 
       float max_fft_index = (float)(fft_size / 2 - 1);
-      float log_index =
-          (powf(2.0f, t * 11.0f) - 1.0f) * (max_fft_index / 2047.0f);
+      float log_index = (powf(2.0f, t * bass_expansion) - 1.0f) *
+                        (max_fft_index / max_log_multiplier);
 
       int idx_low = (int)floorf(log_index);
       int idx_high = (int)ceilf(log_index);

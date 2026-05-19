@@ -18,12 +18,14 @@ window_height=300
 # All frequencies multiplier
 volume_multiplier=0.35
 # Multiplier of low frequencies
-bass_boost_multiplier=3.0
+bass_boost_multiplier=1.0
 example_color=red,green,blue,alpha
 # Bottom color of gradient
 bottom_color=255,255,255,255
 # Top color of gradient
 top_color=173,106,255,255
+# Low frequencies width controller
+bass_expansion=7.5
 ```
 
 # License
